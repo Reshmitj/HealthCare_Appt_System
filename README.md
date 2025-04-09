@@ -22,12 +22,6 @@ Ensure you have the following installed:
 cd backend
 ```
 
-2. Install dependencies (if not installed):
-
-```bash
-pip install -r requirements.txt
-```
-
 3. Run migrations:
 
 ```bash
