@@ -96,3 +96,13 @@ HealthCare_Appt_System/
     ├── public/
     └── src/
 ```
+
+## 👤 Default Login Credentials (for Testing)
+
+| **Role**       | **Username**   | **Password**         |
+|----------------|----------------|----------------------|
+| Doctor         | `Jones`        | `test`               |
+| Patient        | `patient1`     | `test`               |
+| Receptionist   | `reception1`   | `securepass123`      |
+
+> You can register new users through the registration form or pre-load them into the database for demos.
