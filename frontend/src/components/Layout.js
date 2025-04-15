@@ -9,24 +9,33 @@ function Layout({ children, role }) {
     localStorage.clear(); // ✅ Clear username and role
     navigate('/login');
   };
-  
 
   return (
     <div className="layout">
       <div className="sidebar">
         <h3>Menu</h3>
         <nav>
-          <Link to={role === 'doctor' ? '/dashboard/doctor' : '/dashboard/patient'}>🏠 Dashboard</Link>
+          {role === 'doctor' && (
+            <>
+              <Link to="/dashboard/doctor">🏠 Dashboard</Link>
+              <Link to="/doctor-appointments">📋 View Appointments</Link>
+            </>
+          )}
 
           {role === 'patient' && (
             <>
+              <Link to="/dashboard/patient">🏠 Dashboard</Link>
               <Link to="/book-appointment">📅 Book Appointment</Link>
               <Link to="/appointments/my">📖 View My Appointments</Link>
             </>
           )}
 
-          {role === 'doctor' && (
-            <Link to="/doctor-appointments">📋 View Appointments</Link>
+          {role === 'receptionist' && (
+            <>
+              <Link to="/dashboard/receptionist">📋 Receptionist Dashboard</Link>
+              <Link to="/receptionist/patients">👤 View Patient Data</Link>
+              <Link to="/receptionist/doctors">🩺 View Doctor Details</Link>
+            </>
           )}
         </nav>
       </div>

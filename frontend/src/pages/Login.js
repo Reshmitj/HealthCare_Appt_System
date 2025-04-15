@@ -29,7 +29,7 @@ function Login() {
         {
           withCredentials: true,
           headers: {
-            'X-CSRFToken': Cookies.get('csrftoken'),
+            'X-CSRFToken': csrfToken,
           }
         }
       );
@@ -39,9 +39,20 @@ function Login() {
       localStorage.setItem('role', role);
 
       setMessage('✅ Login successful!');
+
+      // Redirect based on user role
       setTimeout(() => {
-        navigate(role === 'patient' ? '/dashboard/patient' : '/dashboard/doctor');
+        if (role === 'patient') {
+          navigate('/dashboard/patient');
+        } else if (role === 'doctor') {
+          navigate('/dashboard/doctor');
+        } else if (role === 'receptionist') {
+          navigate('/dashboard/receptionist');
+        } else {
+          navigate('/login'); // fallback
+        }
       }, 1000);
+
     } catch (err) {
       console.error(err);
       setMessage('❌ Login failed. Check your credentials.');

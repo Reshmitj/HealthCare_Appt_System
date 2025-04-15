@@ -9,6 +9,10 @@ import DashboardPatient from './pages/DashboardPatient';
 import DashboardDoctor from './pages/DashboardDoctor';
 import DoctorAppointments from './pages/DoctorAppointments';
 import MyAppointments from './pages/MyAppointments';
+import ReceptionistDashboard from './pages/ReceptionistDashboard';
+import ViewPatients from './pages/ViewPatients';
+import ViewDoctors from './pages/ViewDoctors';
+
 
 import './components/Layout.css';
 
@@ -32,6 +36,9 @@ function App() {
         <Route path="/dashboard/doctor" element={<DashboardDoctor />} />
         <Route path="/doctor-appointments" element={<DoctorAppointments />} />
         <Route path="/appointments/my" element={<MyAppointments />} />
+        <Route path="/dashboard/receptionist" element={<ReceptionistDashboard />} />
+        <Route path="/receptionist/patients" element={<ViewPatients />} />
+<Route path="/receptionist/doctors" element={<ViewDoctors />} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>

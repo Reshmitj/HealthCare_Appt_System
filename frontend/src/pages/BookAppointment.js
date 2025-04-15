@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Layout from '../components/Layout';
-import '../styles/main.css'; 
+import '../styles/main.css';
 import Cookies from 'js-cookie';
 
-
 function BookAppointment() {
+  const [specialization, setSpecialization] = useState('');
+  const [specializations] = useState([
+    { value: 'general', label: 'General Physician' },
+    { value: 'cardiology', label: 'Cardiologist' },
+    { value: 'dermatology', label: 'Dermatologist' },
+    { value: 'neurology', label: 'Neurologist' },
+    { value: 'pediatrics', label: 'Pediatrician' }
+  ]);
+
   const [doctors, setDoctors] = useState([]);
   const [formData, setFormData] = useState({
     doctor: '',
@@ -15,19 +23,36 @@ function BookAppointment() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/accounts/doctors/', { withCredentials: true })
-      .then(res => setDoctors(res.data))
-      .catch(err => console.error(err));
+    axios.get('http://localhost:8000/api/accounts/csrf/', { withCredentials: true });
   }, []);
 
+  const handleSpecializationChange = async (e) => {
+    const selected = e.target.value;
+    setSpecialization(selected);
+    setFormData({ ...formData, doctor: '' });
+
+    if (selected) {
+      try {
+        const res = await axios.get(`http://localhost:8000/api/accounts/doctors/filter/?specialization=${selected}`, {
+          withCredentials: true
+        });
+        setDoctors(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      setDoctors([]);
+    }
+  };
+
   const handleChange = (e) => {
-    setFormData({...formData, [e.target.name]: e.target.value});
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const csrfToken = Cookies.get('csrftoken'); // ✅ Get CSRF token
-  
+    const csrfToken = Cookies.get('csrftoken');
+
     try {
       await axios.post(
         'http://localhost:8000/api/accounts/appointments/book/',
@@ -35,18 +60,19 @@ function BookAppointment() {
         {
           withCredentials: true,
           headers: {
-            'X-CSRFToken': csrfToken  // ✅ Set CSRF token in header
+            'X-CSRFToken': csrfToken
           }
         }
       );
       setMessage('✅ Appointment booked successfully!');
       setFormData({ doctor: '', date: '', time: '' });
+      setDoctors([]);
+      setSpecialization('');
     } catch (err) {
       console.error(err);
       setMessage('❌ Failed to book appointment. Try again.');
     }
   };
-  
 
   return (
     <Layout role="patient">
@@ -55,6 +81,19 @@ function BookAppointment() {
         {message && <p className="message">{message}</p>}
 
         <form onSubmit={handleSubmit}>
+          <label>Select Specialization</label>
+          <select
+            className="input-field"
+            value={specialization}
+            onChange={handleSpecializationChange}
+            required
+          >
+            <option value="">-- Choose --</option>
+            {specializations.map(spec => (
+              <option key={spec.value} value={spec.value}>{spec.label}</option>
+            ))}
+          </select>
+
           <label>Select Doctor</label>
           <select
             name="doctor"
@@ -62,6 +101,7 @@ function BookAppointment() {
             onChange={handleChange}
             required
             className="input-field"
+            disabled={!doctors.length}
           >
             <option value="">-- Choose --</option>
             {doctors.map(doc => (

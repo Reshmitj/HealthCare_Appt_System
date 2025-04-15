@@ -8,7 +8,8 @@ function Register() {
     username: '',
     email: '',
     password: '',
-    role: 'patient'
+    role: 'patient',
+    specialization: ''
   });
 
   const [message, setMessage] = useState('');
@@ -22,18 +23,24 @@ function Register() {
     const csrfToken = Cookies.get('csrftoken');
 
     try {
+      // Send only specialization if role is doctor
+      const payload = { ...formData };
+      if (formData.role !== 'doctor') {
+        delete payload.specialization;
+      }
+
       await axios.post(
         'http://localhost:8000/api/accounts/register/',
-        formData,
+        payload,
         {
           withCredentials: true,
           headers: {
-            'X-CSRFToken': Cookies.get('csrftoken')
+            'X-CSRFToken': csrfToken
           }
         }
       );
       setMessage('✅ Registration successful!');
-      setFormData({ username: '', email: '', password: '', role: 'patient' });
+      setFormData({ username: '', email: '', password: '', role: 'patient', specialization: '' });
     } catch (err) {
       console.error(err);
       setMessage('❌ Registration failed. Please try again.');
@@ -42,9 +49,9 @@ function Register() {
 
   return (
     <div className="container-center">
-        <div className="topnav">
-  <span className="brand">Healthcare App</span>
-</div>
+      <div className="topnav">
+        <span className="brand">Healthcare App</span>
+      </div>
 
       <form className="form-box" onSubmit={handleSubmit}>
         <h2>Register</h2>
@@ -80,7 +87,25 @@ function Register() {
         <select name="role" value={formData.role} onChange={handleChange}>
           <option value="patient">Patient</option>
           <option value="doctor">Doctor</option>
+          <option value="receptionist">Receptionist</option>
         </select>
+
+        {formData.role === 'doctor' && (
+          <select
+            name="specialization"
+            value={formData.specialization}
+            onChange={handleChange}
+            className="input-field"
+            required
+          >
+            <option value="">Select Specialization</option>
+            <option value="general">General Physician</option>
+            <option value="cardiology">Cardiologist</option>
+            <option value="dermatology">Dermatologist</option>
+            <option value="neurology">Neurologist</option>
+            <option value="pediatrics">Pediatrician</option>
+          </select>
+        )}
 
         <button type="submit">Register</button>
 
